@@ -1,8 +1,3 @@
-module UserStatus
-  ACTIVE = "Active"
-  IN_ACTIVE = "In active"
-end
-
 module UsersDatabase
   USERS = "./User/users.csv"
 end

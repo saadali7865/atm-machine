@@ -1,33 +1,48 @@
 require 'csv'
 require_relative 'utils.rb'
-include UsersDatabase, UserDetail, UserStatus
+include UsersDatabase, UserDetail
 
 class User
-  attr_accessor :id, :name, :national_id, :address, :status, :created_at
+  STATUS = { active: "active", inactive: "in active" }.freeze
 
-  def initialize(name, address, national_id, password)
+  attr_accessor :id, :name, :national_id, :address, :password, :status, :created_at
+
+  def initialize(id, name, address, national_id, password)
+    @id = id
     @address = address
-    @id = get_users_count + 1
     @name = name
     @national_id = national_id
     @password = password
-    @status = ACTIVE
+    @status = :active
     @created_at = Time.now
   end
 
-  def get_users_count
-      CSV.read(USERS).size - 1
+  def self.load_users
+    users = []
+    CSV.foreach(USERS, headers: true) do |row|
+      users << User.new(row['id'], row['name'], row['address'], row['national_id'], row['password'])
+    end
+    users
   end
 
-  def create_user
-    CSV.open(USERS, 'a') do |csv|
-      csv << [@id, @name, @address, @national_id, @password, @status, @created_at]
+  def self.save_users(users)
+    headers = [ID, NAME, ADDRESS, NATIONAL_ID, PASSWORD, STATUS, CREATED_AT]
+    CSV.open(USERS, 'w', write_headers: true, headers: headers) do |csv|
+      users.each do |user|
+        csv << [user.id, user.name, user.address, user.national_id, user.password, user.status, user.created_at]
+      end
     end
   end
 
-  def get_user
-     {ID: @id, NAME: @name, ADDRESS: @address, NATIONAL_ID: @national_id, PASSWORD: @password, STATUS: @status, CREATED_AT: @created_at}
+  def create_user(id, name, address, national_id, password)
+     User.new(id, name, address, national_id, password)
+  end
+
+  def get_user(users, user_id)
+    users.each do |user|
+      return user if user.id == user_id
+    end
+     nil
   end
 
 end
-
