@@ -1,0 +1,4 @@
+id, name, address, national_id, password, status, created_at
+1,Saad Ali,ABCD,35202,12345,Active,2023-04-12 13:37:49 +0500
+2,Saad Ali,ABCD,35202,12345,Active,2023-04-12 13:38:19 +0500
+3,Saad Ali,ABCD,35202,12345,Active,2023-04-12 13:38:27 +0500
