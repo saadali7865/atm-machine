@@ -17,6 +17,14 @@ class User
     @created_at = Time.now
   end
 
+end
+
+class UserController
+  @@users = []
+
+  def initialize
+    @@users = UserController.load_users
+  end
   def self.load_users
     users = []
     CSV.foreach(USERS, headers: true) do |row|
@@ -25,24 +33,27 @@ class User
     users
   end
 
-  def self.save_users(users)
+  def self.save_users
     headers = [ID, NAME, ADDRESS, NATIONAL_ID, PASSWORD, STATUS, CREATED_AT]
     CSV.open(USERS, 'w', write_headers: true, headers: headers) do |csv|
-      users.each do |user|
+      @@users.each do |user|
         csv << [user.id, user.name, user.address, user.national_id, user.password, user.status, user.created_at]
       end
     end
   end
 
-  def create_user(id, name, address, national_id, password)
-     User.new(id, name, address, national_id, password)
+  def create_user(name, address, national_id, password)
+    id = @@users.length + 1
+    user = User.new(id, name, address, national_id, password)
+    @@users.append(user)
+    "User created successfully"
   end
 
-  def get_user(users, user_id)
-    users.each do |user|
+  def get_user(user_id)
+    @@users.each do |user|
       return user if user.id == user_id
     end
-     nil
+    nil
   end
 
 end
