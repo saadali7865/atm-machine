@@ -6,7 +6,7 @@ module AccountDetail
   ID = "id"
   USER = "user"
   PIN = "pin"
-  TYPE = "type"
   STATUS = "status"
+  BALANCE = "balance"
   CREATED_AT = "created_at"
 end

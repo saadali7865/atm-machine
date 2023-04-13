@@ -1,43 +1,40 @@
 require 'csv'
 require_relative 'utils.rb'
-include UsersDatabase, UserDetail
 
 class User
   STATUS = { active: "active", inactive: "in active" }.freeze
+  TYPE = { admin: "admin", public: "public" }.freeze
 
-  attr_accessor :id, :name, :national_id, :address, :password, :status, :created_at
+  attr_accessor :id, :name, :national_id, :address, :password, :status, :type,:created_at
 
-  def initialize(id, name, address, national_id, password)
+  def initialize(id, name, address, national_id, password, status=:active, type=:public, created_at=Time.now)
     @id = id
     @address = address
     @name = name
     @national_id = national_id
     @password = password
-    @status = :active
-    @created_at = Time.now
+    @status = status
+    @type=type
+    @created_at = created_at
   end
 
 end
 
 class UserController
-  @@users = []
-
+  include UsersDatabase, UserDetail
   def initialize
-    @@users = UserController.load_users
+    load_users
   end
-  def self.load_users
-    users = []
-    CSV.foreach(USERS, headers: true) do |row|
-      users << User.new(row['id'], row['name'], row['address'], row['national_id'], row['password'])
-    end
-    users
+
+  def login(name, password)
+    @@users.find { |user| user.name == name and user.password == password}
   end
 
   def self.save_users
-    headers = [ID, NAME, ADDRESS, NATIONAL_ID, PASSWORD, STATUS, CREATED_AT]
+    headers = [ID, NAME, ADDRESS, NATIONAL_ID, PASSWORD, STATUS, TYPE,CREATED_AT]
     CSV.open(USERS, 'w', write_headers: true, headers: headers) do |csv|
       @@users.each do |user|
-        csv << [user.id, user.name, user.address, user.national_id, user.password, user.status, user.created_at]
+        csv << [user.id, user.name, user.address, user.national_id, user.password, user.status, user.type, user.created_at]
       end
     end
   end
@@ -49,11 +46,41 @@ class UserController
     "User created successfully"
   end
 
-  def get_user(user_id)
-    @@users.each do |user|
-      return user if user.id == user_id
+  def edit_user(user_id, name, address, national_id, password)
+    user = get_user(user_id)
+    if user
+      user.name=name
+      user.address = address
+      user.national_id=national_id
+      user.password=password
+      "User updated successfully"
+    else
+      "User not found"
     end
-    nil
   end
+
+  def delete_user(user_id)
+    user = get_user(user_id)
+    if user
+      user.status = :inactive
+      "User deleted successfully"
+    else
+      "User not found"
+    end
+  end
+
+  def get_user(user_id)
+    @@users.find { |user| user.id == user_id}
+  end
+
+  private
+  def load_users
+    @@users ||= begin
+                  CSV.foreach(USERS, headers: true).map do |row|
+                    User.new(row['id'], row['name'], row['address'], row['national_id'], row['password'], row['status'], row['type'], row['created_at'])
+                  end
+                end
+  end
+
 
 end

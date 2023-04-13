@@ -9,5 +9,6 @@ module UserDetail
   NATIONAL_ID = "national_id"
   PASSWORD = "password"
   STATUS = "status"
+  TYPE = "type"
   CREATED_AT = "created_at"
 end
