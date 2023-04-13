@@ -68,7 +68,7 @@ class AccountController
   def load_accounts
     @@accounts ||= begin
                      CSV.foreach(ACCOUNTS, headers: true).map do |row|
-                       Account.new(row['id'], row['user'], row['pin'], row['balance'], row['status'], row['created_at'])
+                       Account.new(row[ID], row[USER], row[PIN], row[BALANCE], row[STATUS], row[CREATED_AT])
                      end
                    end
   end

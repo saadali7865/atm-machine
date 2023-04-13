@@ -77,7 +77,7 @@ class UserController
   def load_users
     @@users ||= begin
                   CSV.foreach(USERS, headers: true).map do |row|
-                    User.new(row['id'], row['name'], row['address'], row['national_id'], row['password'], row['status'], row['type'], row['created_at'])
+                    User.new(row[ID], row[NAME], row[ADDRESS], row[NATIONAL_ID], row[PASSWORD], row[STATUS], row[TYPE], row[CREATED_AT])
                   end
                 end
   end
