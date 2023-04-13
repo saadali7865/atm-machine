@@ -47,7 +47,7 @@ class AccountController
   end
 
   def get_account(account_id)
-    @@accounts.select { |account| account.id == account_id}
+    @@accounts.find { |account| account.id == account_id}
   end
 
   def get_user_account(user_id)
